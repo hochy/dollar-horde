@@ -10,15 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Validate project structure
-        run: |
-          ls -la
-          find . -name "*.gd" -o -name "*.tscn" | head -20
-      
       - uses: chickensoft-games/godot-ci@v3
         with:
-          version: 4.4.stable.mono
-          export-templates: false
+          version: 4.4.stable
+          export-templates: true
           android: true
       
       - name: Build APK
@@ -29,8 +24,3 @@ jobs:
         with:
           name: android-apk
           path: build/*.apk
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: build/*.html build/*.js build/*.wasm
