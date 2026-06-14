@@ -5,20 +5,39 @@ on:
   workflow_dispatch:
 
 jobs:
-  export-android:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      - uses: chickensoft-games/godot-ci@v3
-        with:
-          version: 4.4.stable
-          export-templates: true
-          android: true
+      - name: Download Godot
+        run: |
+          wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux.x86_64.zip
+          unzip -q Godot_v4.4-stable_linux.x86_64.zip
+      
+      - name: Download export templates
+        run: |
+          wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_export_templates.zip
+          mkdir -p ~/.local/share/godot/export_templates/4.4.stable
+          unzip -o -q Godot_v4.4-stable_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
+      
+      - name: Install Java
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
+      
+      - name: Install Android SDK
+        run: |
+          mkdir -p ~/Android/Sdk
+          cd ~/Android/Sdk
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-9477386_latest.zip
+          echo "y" | ./cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0" || true
       
       - name: Build APK
         run: |
-          godot --headless --path . --export-debug Android build/dollar_horde-debug.apk
+          chmod +x Godot_v4.4-stable_linux.x86_64
+          ./Godot_v4.4-stable_linux.x86_64 --headless --path . --export-debug Android build/dollar_horde-debug.apk
       
       - uses: actions/upload-artifact@v4
         with:
