@@ -15,7 +15,7 @@ jobs:
           wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux.x86_64.zip
           unzip -q Godot_v4.4-stable_linux.x86_64.zip
       
-      - name: Download export templates
+      - name: Download export templates  
         run: |
           wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_export_templates.zip
           mkdir -p ~/.local/share/godot/export_templates/4.4.stable
@@ -31,13 +31,20 @@ jobs:
           mkdir -p ~/Android/Sdk
           cd ~/Android/Sdk
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip -q commandlinetools-linux-9477386_latest.zip
-          echo "y" | ./cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0" || true
+          unzip -q commandlinetools-linux-*.zip
+          echo "y" | ./cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+      
+      - name: Create debug keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/release.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass androiddebugkey -keypass androiddebugkey -dname "CN=Android Debug,O=Android,C=US"
       
       - name: Build APK
         run: |
           chmod +x Godot_v4.4-stable_linux.x86_64
-          ./Godot_v4.4-stable_linux.x86_64 --headless --path . --export-debug Android build/dollar_horde-debug.apk
+          export ANDROID_SDK_ROOT=~/Android/Sdk
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+          ./Godot_v4.4-stable_linux.x86_64 --headless --export-debug Android build/dollar_horde-debug.apk
       
       - uses: actions/upload-artifact@v4
         with:
