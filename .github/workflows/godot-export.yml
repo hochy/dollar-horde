@@ -5,46 +5,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  export-android:
     runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4
     steps:
       - uses: actions/checkout@v4
       
-      - name: Download Godot
-        run: |
-          wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux.x86_64.zip
-          unzip -q Godot_v4.4-stable_linux.x86_64.zip
-      
-      - name: Download export templates  
-        run: |
-          wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_export_templates.zip
-          mkdir -p ~/.local/share/godot/export_templates/4.4.stable
-          unzip -o -q Godot_v4.4-stable_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
-      
-      - name: Install Java
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk
-      
       - name: Install Android SDK
         run: |
-          mkdir -p ~/Android/Sdk
-          cd ~/Android/Sdk
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
           echo "y" | ./cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0"
       
-      - name: Create debug keystore
+      - name: Create keystore
         run: |
           mkdir -p ~/.android
           keytool -genkey -v -keystore ~/.android/release.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass androiddebugkey -keypass androiddebugkey -dname "CN=Android Debug,O=Android,C=US"
       
       - name: Build APK
         run: |
-          chmod +x Godot_v4.4-stable_linux.x86_64
-          export ANDROID_SDK_ROOT=~/Android/Sdk
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-          ./Godot_v4.4-stable_linux.x86_64 --headless --export-debug Android build/dollar_horde-debug.apk
+          godot --headless --export-debug Android build/dollar_horde-debug.apk
       
       - uses: actions/upload-artifact@v4
         with:
