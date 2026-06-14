@@ -1,0 +1,57 @@
+name: Godot Export
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  export-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate project structure
+        run: |
+          ls -la
+          find . -name "*.gd" -o -name "*.tscn" | head -20
+      
+      - name: Download Godot 4.4 + templates
+        run: |
+          wget -q https://downloads.godotengine.org/editor/Godot_v4.4-stable_linux.x86_64.zip
+          unzip -q Godot_v4.4-stable_linux.x86_64.zip
+          wget -q https://downloads.godotengine.org/export_templates/4.4.stable/Godot_v4.4-stable_export_templates.zip
+          mkdir -p ~/.local/share/godot/export_templates/4.4.stable
+          unzip -q Godot_v4.4-stable_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
+      
+      - name: Install Android SDK (Java 11 + SDK tools)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
+          echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
+      
+      - name: Setup Android SDK
+        run: |
+          mkdir -p ~/Android/Sdk
+          cd ~/Android/Sdk
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-9477386_latest.zip
+          yes | cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26.1.10909125" || true
+      
+      - name: Configure Godot export
+        run: |
+          echo "ANDROID_SDK_ROOT=~/Android/Sdk" >> $GITHUB_ENV
+      
+      - name: Export APK
+        run: |
+          chmod +x Godot_v4.4-stable_linux.x86_64/Godot_v4.4-stable_linux.x86_64
+          ./Godot_v4.4-stable_linux.x86_64/Godot_v4.4-stable_linux.x86_64 --headless --export-debug "Android" build/dollar_horde-debug.apk
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/*.apk
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/*.html build/*.js build/*.wasm

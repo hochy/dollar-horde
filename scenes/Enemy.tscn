@@ -1,0 +1,80 @@
+[gd_scene load_steps=6 format=3 uid="uid://enemy_scene"]
+
+[ext_resource type="Script" path="res://scripts/enemy.gd" id="1_enemy"]
+[ext_resource type="Texture2D" path="res://assets/particle.png" id="2_particle"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enemy"]
+radius = 12.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_death"]
+emission_shape = 1
+emission_sphere_radius = 6.0
+particle_flag_disable_z = true
+direction = Vector3(0, 0, 0)
+spread = 180.0
+gravity = Vector3(0, 50, 0)
+initial_velocity_min = 40.0
+initial_velocity_max = 80.0
+scale_min = 2.0
+scale_max = 5.0
+color = Color(0.9, 0.15, 0.1, 0.9)
+
+[node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_enemy")
+
+[node name="SpriteRoot" type="Node2D" parent="."]
+
+[node name="Body" type="ColorRect" parent="SpriteRoot"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+color = Color(0.75, 0.1, 0.1, 1)
+
+[node name="Spikes" type="ColorRect" parent="SpriteRoot"]
+offset_left = -14.0
+offset_top = -4.0
+offset_right = -10.0
+offset_bottom = 4.0
+color = Color(0.9, 0.2, 0.15, 1)
+
+[node name="Spikes2" type="ColorRect" parent="SpriteRoot"]
+offset_left = 10.0
+offset_top = -4.0
+offset_right = 14.0
+offset_bottom = 4.0
+color = Color(0.9, 0.2, 0.15, 1)
+
+[node name="Spikes3" type="ColorRect" parent="SpriteRoot"]
+offset_left = -4.0
+offset_top = -14.0
+offset_right = 4.0
+offset_bottom = -10.0
+color = Color(0.9, 0.2, 0.15, 1)
+
+[node name="Spikes4" type="ColorRect" parent="SpriteRoot"]
+offset_left = -4.0
+offset_top = 10.0
+offset_right = 4.0
+offset_bottom = 14.0
+color = Color(0.9, 0.2, 0.15, 1)
+
+[node name="Eyes" type="ColorRect" parent="SpriteRoot"]
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+color = Color(1, 0.8, 0, 0.8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_enemy")
+
+[node name="DeathParticles" type="GPUParticles2D" parent="."]
+amount = 25
+process_material = SubResource("ParticleProcessMaterial_death")
+texture = ExtResource("2_particle")
+one_shot = true
+explosiveness = 1.0
+emitting = false

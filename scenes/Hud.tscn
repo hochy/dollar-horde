@@ -1,0 +1,128 @@
+[gd_scene load_steps=2 format=3 uid="uid://hud_scene"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+
+[node name="Hud" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_hud")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HpBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="HpLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "HP: 100/100"
+
+[node name="XpBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+value = 0.0
+show_percentage = false
+
+[node name="LevelLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Lv 1"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "0:00"
+
+[node name="WaveLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Wave 1"
+
+[node name="KillLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Kills: 0"
+
+[node name="LevelUpPanel" type="Panel" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -120.0
+offset_right = 120.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelUpPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="Title" type="Label" parent="LevelUpPanel/VBoxContainer"]
+layout_mode = 2
+text = "Level Up!"
+horizontal_alignment = 1
+
+[node name="UpgradeContainer" type="VBoxContainer" parent="LevelUpPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="GameOverPanel" type="Panel" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -100.0
+offset_right = 120.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameOverPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="Title" type="Label" parent="GameOverPanel/VBoxContainer"]
+layout_mode = 2
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="Stats" type="Label" parent="GameOverPanel/VBoxContainer"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+
+[node name="RestartBtn" type="Button" parent="GameOverPanel/VBoxContainer"]
+layout_mode = 2
+text = "Try Again"
+
+[node name="MenuBtn" type="Button" parent="GameOverPanel/VBoxContainer"]
+layout_mode = 2
+text = "Main Menu"

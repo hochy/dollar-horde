@@ -1,0 +1,90 @@
+[gd_scene load_steps=8 format=3 uid="uid://player_scene"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="Texture2D" path="res://assets/particle.png" id="2_particle"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 14.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pickup"]
+radius = 80.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_trail"]
+emission_shape = 1
+emission_sphere_radius = 2.0
+particle_flag_disable_z = true
+direction = Vector3(0, 0, 0)
+spread = 20.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 10.0
+initial_velocity_max = 20.0
+scale_min = 1.0
+scale_max = 2.0
+color = Color(0.2, 0.6, 1, 0.6)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hit"]
+emission_shape = 1
+emission_sphere_radius = 4.0
+particle_flag_disable_z = true
+direction = Vector3(0, 0, 0)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 30.0
+initial_velocity_max = 60.0
+scale_min = 1.0
+scale_max = 3.0
+color = Color(1, 0.3, 0.3, 0.8)
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 1
+collision_mask = 2
+script = ExtResource("1_player")
+
+[node name="SpriteRoot" type="Node2D" parent="."]
+
+[node name="Body" type="ColorRect" parent="SpriteRoot"]
+offset_left = -12.0
+offset_top = -18.0
+offset_right = 12.0
+offset_bottom = 18.0
+color = Color(0.15, 0.55, 0.95, 1)
+
+[node name="Head" type="ColorRect" parent="SpriteRoot"]
+offset_left = -8.0
+offset_top = -24.0
+offset_right = 8.0
+offset_bottom = -10.0
+color = Color(0.3, 0.7, 1, 1)
+
+[node name="Eyes" type="ColorRect" parent="SpriteRoot"]
+offset_left = -6.0
+offset_top = -20.0
+offset_right = 6.0
+offset_bottom = -16.0
+color = Color(1, 1, 1, 0.9)
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_player")
+
+[node name="PickupArea" type="Area2D" parent="."]
+
+[node name="PickupShape" type="CollisionShape2D" parent="PickupArea"]
+shape = SubResource("CircleShape2D_pickup")
+debug_color = Color(0, 1, 0.3, 0.3)
+
+[node name="WeaponOrigin" type="Marker2D" parent="."]
+position = Vector2(0, -5)
+
+[node name="TrailParticles" type="GPUParticles2D" parent="."]
+amount = 20
+process_material = SubResource("ParticleProcessMaterial_trail")
+texture = ExtResource("2_particle")
+emitting = false
+
+[node name="HitParticles" type="GPUParticles2D" parent="."]
+amount = 15
+process_material = SubResource("ParticleProcessMaterial_hit")
+texture = ExtResource("2_particle")
+one_shot = true
+explosiveness = 0.8
+emitting = false
