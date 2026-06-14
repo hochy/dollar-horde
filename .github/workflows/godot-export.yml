@@ -10,15 +10,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Godot Android build
-        uses: barichello/godot-ci/.github/actions/godot-build-android@master
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools-version: 34.0.0
+      
+      - name: Create debug keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore \
+            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass androiddebugkey -keypass androiddebugkey \
+            -dname "CN=Android Debug,O=Android,C=US"
+      
+      - name: Create export preset
+        run: |
+          mkdir -p .godot/export_preset
+          echo '[preset.0]' > export_presets.cfg
+          echo 'name="Android"' >> export_presets.cfg
+          echo 'platform="Android"' >> export_presets.cfg
+          echo 'runnable=true' >> export_presets.cfg
+          echo 'export_filter="*"' >> export_presets.cfg
+      
+      - name: Godot Export
+        uses: freecodecamp/godot-export@v1
         with:
           godot-version: '4.4'
-          export-name: 'Android'
-          android-package-name: 'dollarhorde'
-          android-package-id: 'com.thedronedemon.dollarhorde'
+          export-platform: 'Android'
+          export-filename: 'DollarHorde'
       
       - uses: actions/upload-artifact@v4
         with:
-          name: dollar-horde-apk
+          name: android-apk
           path: export/*.apk || true
