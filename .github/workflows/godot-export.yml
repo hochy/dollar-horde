@@ -2,7 +2,7 @@ name: Godot Export
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   export-android:
@@ -15,39 +15,15 @@ jobs:
           ls -la
           find . -name "*.gd" -o -name "*.tscn" | head -20
       
-      - name: Download Godot 4.4
-        run: |
-          wget -q https://downloads.tuxfamily.org/godotengine/4.4/mono/Godot_v4.4-stable_mono_linux_x86_64.zip
-          unzip -q Godot_v4.4-stable_mono_linux_x86_64.zip
-          wget -q https://downloads.tuxfamily.org/godotengine/4.4/mono/Godot_v4.4-stable_mono_export_templates.zip
-          mkdir -p ~/.local/share/godot/export_templates/4.4.stable
-          unzip -q Godot_v4.4-stable_mono_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
+      - uses: chickensoft-games/godot-ci@v3
+        with:
+          version: 4.4.stable.mono
+          export-templates: false
+          android: true
       
-      - name: Install Android SDK (Java 11 + SDK tools)
+      - name: Build APK
         run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk
-          echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
-      
-      - name: Setup Android SDK
-        run: |
-          mkdir -p ~/Android/Sdk
-          cd ~/Android/Sdk
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip -q commandlinetools-linux-9477386_latest.zip
-          yes | cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26.1.10909125" || true
-      
-      - name: Configure Godot export
-        run: |
-          echo "ANDROID_SDK_ROOT=~/Android/Sdk" >> $GITHUB_ENV
-      
-      - name: Export APK
-        run: |
-          chmod +x Godot_v4.4-stable_mono_linux_x86_64
-          # Templates need to be in the right folder
-          mkdir -p ~/.local/share/godot/export_templates/4.4.stable/templates
-          unzip -q Godot_v4.4-stable_mono_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable/templates
-          ./Godot_v4.4-stable_mono_linux_x86_64 --headless --export-debug "Android" build/dollar_horde-debug.apk
+          godot --headless --path . --export-debug Android build/dollar_horde-debug.apk
       
       - uses: actions/upload-artifact@v4
         with:
