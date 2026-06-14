@@ -1,33 +1,25 @@
-name: Godot Export
+name: Godot Android Export
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 jobs:
-  export-android:
+  export:
     runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.4
     steps:
       - uses: actions/checkout@v4
       
-      - name: Install Android SDK
-        run: |
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip -q commandlinetools-linux-*.zip
-          echo "y" | ./cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-      
-      - name: Create keystore
-        run: |
-          mkdir -p ~/.android
-          keytool -genkey -v -keystore ~/.android/release.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass androiddebugkey -keypass androiddebugkey -dname "CN=Android Debug,O=Android,C=US"
-      
-      - name: Build APK
-        run: |
-          godot --headless --export-debug Android build/dollar_horde-debug.apk
-      
-      - uses: actions/upload-artifact@v4
+      - name: Godot Android export
+        uses: freecodecamp/godot-export@v1
+        with:
+          godot-version: '4.4'
+          android-sdk: true
+          android-keystore: androiddebugkey
+          android-keystore-password: androiddebugkey
+          
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: build/*.apk
+          path: export/*.apk
