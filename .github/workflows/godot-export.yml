@@ -5,21 +5,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  android:
+  build:
     runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install Java 11
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk
-      
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          api-level: 34
-          build-tools-version: 34.0.0
       
       - name: Create keystore
         run: |
@@ -29,28 +20,10 @@ jobs:
             -storepass androiddebugkey -keypass androiddebugkey \
             -dname "CN=Android Debug,O=Android,C=US"
       
-      - name: Download Godot
-        run: |
-          wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_x86_64.zip
-          unzip -q Godot_v4.4-stable_linux_x86_64.zip
-      
-      - name: Download templates
-        run: |
-          wget -q https://downloads.tuxfamily.org/godotengine/4.4/export_templates-4.4-stable.zip
-          mkdir -p ~/.local/share/godot/export_templates/4.4.stable
-          unzip -q export_templates-4.4-stable.zip -d ~/.local/share/godot/export_templates/4.4.stable
-      
-      - name: Copy Android template
-        run: |
-          cp ~/.local/share/godot/export_templates/4.4.stable/template_export.apk ~/.local/share/godot/export_templates/4.4.stable/android_debug.apk 2>/dev/null || true
-      
-      - name: Export
+      - name: Export APK
         run: |
           mkdir -p export
-          export ANDROID_SDK_ROOT=${{ runner.temp }}/android-sdk
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-          ./Godot_v4.4-stable_linux_x86_64/Godot*x86_64 \
-            --headless --export-debug "Android" export/DollarHorde.apk
+          godot --headless --export-debug "Android" export/DollarHorde.apk
       
       - uses: actions/upload-artifact@v4
         with:
