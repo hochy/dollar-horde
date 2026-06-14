@@ -15,13 +15,13 @@ jobs:
           ls -la
           find . -name "*.gd" -o -name "*.tscn" | head -20
       
-      - name: Download Godot 4.4 + templates
+      - name: Download Godot 4.4
         run: |
-          wget -q https://downloads.godotengine.org/editor/Godot_v4.4-stable_linux.x86_64.zip
-          unzip -q Godot_v4.4-stable_linux.x86_64.zip
-          wget -q https://downloads.godotengine.org/export_templates/4.4.stable/Godot_v4.4-stable_export_templates.zip
+          wget -q https://downloads.tuxfamily.org/godotengine/4.4/mono/Godot_v4.4-stable_mono_linux_x86_64.zip
+          unzip -q Godot_v4.4-stable_mono_linux_x86_64.zip
+          wget -q https://downloads.tuxfamily.org/godotengine/4.4/mono/Godot_v4.4-stable_mono_export_templates.zip
           mkdir -p ~/.local/share/godot/export_templates/4.4.stable
-          unzip -q Godot_v4.4-stable_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
+          unzip -q Godot_v4.4-stable_mono_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
       
       - name: Install Android SDK (Java 11 + SDK tools)
         run: |
@@ -43,8 +43,11 @@ jobs:
       
       - name: Export APK
         run: |
-          chmod +x Godot_v4.4-stable_linux.x86_64/Godot_v4.4-stable_linux.x86_64
-          ./Godot_v4.4-stable_linux.x86_64/Godot_v4.4-stable_linux.x86_64 --headless --export-debug "Android" build/dollar_horde-debug.apk
+          chmod +x Godot_v4.4-stable_mono_linux_x86_64
+          # Templates need to be in the right folder
+          mkdir -p ~/.local/share/godot/export_templates/4.4.stable/templates
+          unzip -q Godot_v4.4-stable_mono_export_templates.zip -d ~/.local/share/godot/export_templates/4.4.stable/templates
+          ./Godot_v4.4-stable_mono_linux_x86_64 --headless --export-debug "Android" build/dollar_horde-debug.apk
       
       - uses: actions/upload-artifact@v4
         with:
