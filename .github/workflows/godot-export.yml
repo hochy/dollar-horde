@@ -10,19 +10,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Java 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 11
+      - name: Install Java 11
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
       
-      - name: Setup Android SDK
+      - name: Install Android SDK
         uses: android-actions/setup-android@v3
         with:
           api-level: 34
           build-tools-version: 34.0.0
       
-      - name: Create debug keystore
+      - name: Create keystore
         run: |
           mkdir -p ~/.android
           keytool -genkey -v -keystore ~/.android/debug.keystore \
@@ -32,29 +31,28 @@ jobs:
       
       - name: Download Godot
         run: |
-          curl -L -o godot.zip https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_x86_64.zip
-          unzip -q godot.zip
-          chmod +x Godot_v4.4-stable_linux_x86_64/Godot*x86_64
+          wget -q https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_x86_64.zip
+          unzip -q Godot_v4.4-stable_linux_x86_64.zip
       
-      - name: Download export templates
+      - name: Download templates
         run: |
-          curl -L -o templates.zip https://downloads.tuxfamily.org/godotengine/4.4/export_templates-4.4-stable.zip
+          wget -q https://downloads.tuxfamily.org/godotengine/4.4/export_templates-4.4-stable.zip
           mkdir -p ~/.local/share/godot/export_templates/4.4.stable
-          unzip -q templates.zip -d ~/.local/share/godot/export_templates/4.4.stable
+          unzip -q export_templates-4.4-stable.zip -d ~/.local/share/godot/export_templates/4.4.stable
       
-      - name: Export APK
-        env:
-          ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
-          JAVA_HOME: ${{ runner.temp }}/java11
+      - name: Copy Android template
+        run: |
+          cp ~/.local/share/godot/export_templates/4.4.stable/template_export.apk ~/.local/share/godot/export_templates/4.4.stable/android_debug.apk 2>/dev/null || true
+      
+      - name: Export
         run: |
           mkdir -p export
+          export ANDROID_SDK_ROOT=${{ runner.temp }}/android-sdk
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
           ./Godot_v4.4-stable_linux_x86_64/Godot*x86_64 \
-            --headless --export-debug "Android" export/DollarHorde.apk 2>&1 || echo "Export failed"
-          ls -la export/ || true
-          find export -name "*.apk" || echo "No APK found"
+            --headless --export-debug "Android" export/DollarHorde.apk
       
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: android-apk
+          name: dollar-horde-apk
           path: export/*.apk || true
