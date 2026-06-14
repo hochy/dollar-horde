@@ -3,7 +3,7 @@
 [application]
 config/package/identifier="com.thedronedemon.dollarhorde"
 
-config/name="Dollar Horde"
+config/name="dollarhorde"
 config/description="Survive the Horde. Collect dollars. Level up. Die anyway."
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.4")

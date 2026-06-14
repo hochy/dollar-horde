@@ -1,25 +1,31 @@
-name: Godot Android Export
+name: Build Android APK
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 jobs:
-  export:
+  android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      - name: Godot Android export
-        uses: freecodecamp/godot-export@v1
+      - name: Create debug keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore \
+            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass androiddebugkey -keypass androiddebugkey \
+            -dname "CN=Android Debug,O=Android,C=US"
+      
+      - name: Build APK with Godot
+        uses: chickensoft-games/godot-ci-actions/.github/actions/godot-build-android@main
         with:
+          source-path: .
           godot-version: '4.4'
-          android-sdk: true
-          android-keystore: androiddebugkey
-          android-keystore-password: androiddebugkey
-          
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
-          path: export/*.apk
+          name: dollar-horde-apk
+          path: export/*.apk || ""

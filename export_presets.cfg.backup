@@ -1,0 +1,16 @@
+[preset.0]
+
+name="Android"
+platform="Android"
+runnable=true
+export_filter="*"
+include_filter=""
+exclude_filter=""
+
+[preset.0.options]
+
+package/name="dollarhorde"
+package/identifier="com.thedronedemon.dollarhorde"
+keystore/debug="/home/jeremy/.android/release.keystore"
+keystore/debug_user="androiddebugkey"
+keystore/debug_password="androiddebugkey"
