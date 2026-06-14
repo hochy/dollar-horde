@@ -7,23 +7,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.4
     steps:
       - uses: actions/checkout@v4
       
-      - name: Create keystore
-        run: |
-          mkdir -p ~/.android
-          keytool -genkey -v -keystore ~/.android/debug.keystore \
-            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass androiddebugkey -keypass androiddebugkey \
-            -dname "CN=Android Debug,O=Android,C=US"
-      
-      - name: Export APK
-        run: |
-          mkdir -p export
-          godot --headless --export-debug "Android" export/DollarHorde.apk
+      - name: Godot Android build
+        uses: barichello/godot-ci/.github/actions/godot-build-android@master
+        with:
+          godot-version: '4.4'
+          export-name: 'Android'
+          android-package-name: 'dollarhorde'
+          android-package-id: 'com.thedronedemon.dollarhorde'
       
       - uses: actions/upload-artifact@v4
         with:
