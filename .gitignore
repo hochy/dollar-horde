@@ -1,0 +1,15 @@
+# Godot
+.godot/
+imported/
+
+# Android SDK
+~/Android/Sdk/
+
+# Build artifacts
+builds/
+export/
+
+# Editor
+*.import/
+export_presets.cfg
+~*.blend
